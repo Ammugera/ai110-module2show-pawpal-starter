@@ -60,13 +60,15 @@ Yes, I included an
 
 **a. Constraints and priorities**
 
-- What constraints does your scheduler consider (for example: time, priority, preferences)?
-- How did you decide which constraints mattered most?
+The PawPal+ scheduler considers multiple interconnected constraints to generate realistic daily plans for pet owners. The primary constraint is owner availability; tasks can only be scheduled during the time windows when the owner is free to perform them. On top of this temporal constraint, the scheduler considers task priority (HIGH, MEDIUM, LOW), deadline urgency (tasks due today or overdue get scheduled first), and task dependencies (some tasks must occur before others, such as giving medication before a walk). Additionally, the system incorporates softer constraints like time preferences (morning, afternoon, evening, or specific times), energy-level matching (high-energy tasks like walks are preferred in the morning while low-energy tasks like grooming fit better in the evening), and buffer time (5-minute transition periods between tasks to account for setup and cleanup). The scheduler also supports parallel tasks, allowing certain activities like supervised play to overlap when both tasks are marked as parallelizable.
+
+I decided which constraints mattered most by analyzing the real-world needs of pet owners and the consequences of constraint violations. Hard constraints (owner availability, deadlines, and dependencies) cannot be violated because they represent physical impossibilities (the owner cannot be in two places at once, and a vet appointment cannot be missed). These constraints directly control whether tasks get scheduled at all. Soft constraints like time preferences and energy matching serve as tiebreakers when multiple valid time slots exist; they improve schedule quality without preventing tasks from being completed. This hierarchy emerged from recognizing that in pet care, completing critical tasks (medication, vet visits) matters more than having the ideal time-of-day match. The priority system reflects this by scheduling urgent and high-priority tasks first, ensuring they claim the best available slots before lower-priority tasks are considered.
 
 **b. Tradeoffs**
 
-- Describe one tradeoff your scheduler makes.
-- Why is that tradeoff reasonable for this scenario?
+The most significant tradeoff my scheduler makes is using a greedy priority-first algorithm instead of global optimization. The scheduler processes tasks one at a time in priority order (urgent, high, medium, low), placing each task in the first available slot that fits. Once a task is scheduled, it never moves, even if rearranging previously-scheduled tasks would allow more tasks to fit overall. This prevents both Task B and Task C from fitting, achieving just 50% time utilization.
+
+This tradeoff is reasonable for the pet care scheduling scenario for several key reasons. Predictability and user trust are paramount; pet owners need to know that when they mark a task as HIGH priority, it will always get scheduled first, regardless of what clever rearrangements might be possible. The greedy approach guarantees that urgent tasks like vet appointments and medication always claim the first available slots, which aligns with user expectations far better than an algorithm that might skip a high-priority task to make room for multiple low-priority ones. 
 
 ---
 
